@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>90-Day Health Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #f7f4ef;
+  --surface: #ffffff;
+  --border: #e8e2d9;
+  --text: #1a1612;
+  --muted: #8a8078;
+  --dim: #c8c0b4;
+  --red: #c0392b;
+  --green: #1e6e42;
+  --amber: #b8680a;
+  --blue: #1a4a7a;
+  --accent: #2d5a27;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
+
+/* HEADER */
+.header {
+  background: var(--text);
+  padding: 28px 18px 20px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-eyebrow { font-size: 9px; letter-spacing: 0.2em; color: #888; text-transform: uppercase; margin-bottom: 6px; }
+.header-title { font-family: 'Playfair Display', serif; font-size: 28px; color: #fff; line-height: 1.1; font-weight: 900; }
+.header-title span { color: #c8a96e; }
+.header-sub { font-size: 10px; color: #555; margin-top: 6px; letter-spacing: 0.06em; }
+
+/* WARNING BANNER */
+.warning-banner {
+  background: #fff8f0;
+  border-left: 4px solid var(--amber);
+  margin: 14px 16px 0;
+  padding: 10px 12px;
+  border-radius: 0 6px 6px 0;
+  font-size: 9.5px;
+  color: var(--amber);
+  line-height: 1.6;
+}
+.warning-banner strong { display: block; font-size: 10px; margin-bottom: 3px; letter-spacing: 0.06em; }
+
+/* TABS */
+.tabs { display: flex; gap: 3px; padding: 14px 16px 0; overflow-x: auto; background: var(--text); }
+.tab { padding: 7px 13px; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 5px 5px 0 0; cursor: pointer; border: none; color: #555; background: #111; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: all 0.18s; font-weight: 500; }
+.tab.active { background: var(--bg); color: var(--text); }
+
+/* CONTENT */
+.content { padding: 18px 16px 80px; max-width: 520px; margin: 0 auto; }
+.panel { display: none; animation: fu 0.3s ease; }
+.panel.active { display: block; }
+@keyframes fu { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* SECTION HEADERS */
+.sec-label { font-size: 8.5px; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; margin-bottom: 12px; margin-top: 22px; font-weight: 500; }
+.sec-label:first-child { margin-top: 0; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.card-header { padding: 13px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.card-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.card-body { padding: 14px; }
+
+/* PHASE BADGE */
+.badge { font-size: 8px; padding: 3px 8px; border-radius: 20px; font-weight: 500; letter-spacing: 0.08em; }
+.badge-green { background: #e8f5ed; color: var(--green); border: 1px solid #b8dcc4; }
+.badge-amber { background: #fef3e2; color: var(--amber); border: 1px solid #f0d090; }
+.badge-red { background: #fde8e6; color: var(--red); border: 1px solid #f0b8b2; }
+.badge-blue { background: #e6eef8; color: var(--blue); border: 1px solid #b0c8e8; }
+
+/* WORKOUT TWEAK */
+.tweak { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-start; }
+.tweak:last-child { border-bottom: none; }
+.tweak-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.tweak-title { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.tweak-desc { font-size: 10px; color: var(--muted); line-height: 1.65; }
+.tweak-change { font-size: 9px; margin-top: 5px; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+.old { background: #fde8e6; color: var(--red); margin-right: 4px; }
+.new { background: #e8f5ed; color: var(--green); }
+
+/* MEAL PLAN */
+.phase-header { padding: 14px; background: var(--text); color: #fff; border-radius: 8px; margin-bottom: 10px; }
+.phase-num { font-size: 8px; letter-spacing: 0.15em; color: #888; margin-bottom: 3px; }
+.phase-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+.phase-subtitle { font-size: 10px; color: #888; margin-top: 3px; }
+.phase-goals { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.pg { font-size: 8.5px; padding: 3px 8px; border-radius: 20px; background: rgba(255,255,255,0.08); color: #aaa; }
+
+.meal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+.meal-header { padding: 10px 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.meal-time { font-size: 9px; color: var(--muted); letter-spacing: 0.08em; }
+.meal-name { font-size: 12.5px; font-weight: 500; color: var(--text); }
+.meal-macro { font-size: 9px; color: var(--muted); }
+.meal-arrow { font-size: 10px; color: var(--dim); transition: transform 0.2s; }
+.meal-arrow.open { transform: rotate(180deg); }
+.meal-body { display: none; padding: 0 13px 12px; border-top: 1px solid var(--border); }
+.meal-body.open { display: block; animation: fu 0.2s ease; }
+.meal-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f4f0ea; font-size: 10.5px; }
+.meal-item:last-child { border-bottom: none; }
+.meal-item-name { color: var(--text); }
+.meal-item-qty { color: var(--muted); font-size: 9.5px; }
+.meal-note { margin-top: 8px; padding: 7px 10px; background: #f7f4ef; border-radius: 5px; font-size: 9.5px; color: var(--muted); line-height: 1.6; font-style: italic; }
+.macro-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); }
+.macro-cell { background: var(--surface); padding: 8px 6px; text-align: center; }
+.macro-val { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--text); }
+.macro-lbl { font-size: 7.5px; color: var(--dim); letter-spacing: 0.08em; margin-top: 1px; }
+
+/* AVOID LIST */
+.avoid-cat { margin-bottom: 14px; }
+.avoid-cat-header { display: flex; align-items: center; gap: 8px; padding: 10px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px 8px 0 0; cursor: pointer; }
+.avoid-cat-icon { font-size: 16px; }
+.avoid-cat-title { font-size: 12.5px; font-weight: 500; color: var(--text); flex: 1; }
+.avoid-cat-risk { font-size: 8px; padding: 2px 7px; border-radius: 10px; }
+.avoid-items { display: none; background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; }
+.avoid-items.open { display: block; }
+.avoid-item { padding: 9px 13px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; }
+.avoid-item:last-child { border-bottom: none; }
+.avoid-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.avoid-item-name { font-size: 11px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.avoid-item-why { font-size: 9.5px; color: var(--muted); line-height: 1.55; }
+
+/* METRICS TRACKER */
+.metric-row { display: grid; grid-template-columns: 1fr 80px 80px 80px; gap: 1px; background: var(--border); }
+.metric-cell { background: var(--surface); padding: 9px 10px; }
+.metric-label { font-size: 10.5px; font-weight: 500; color: var(--text); }
+.metric-sub { font-size: 8.5px; color: var(--dim); margin-top: 1px; }
+.metric-val { font-size: 11px; text-align: center; font-weight: 500; }
+.metric-header-row { display: grid; grid-template-columns: 1fr 80px 80px 80px; gap: 1px; background: var(--text); }
+.metric-header-cell { background: var(--text); padding: 7px 10px; font-size: 8px; color: #666; letter-spacing: 0.1em; text-align: center; }
+.metric-header-cell:first-child { text-align: left; }
+
+/* PROGRESS PHASES */
+.phase-timeline { display: flex; margin-bottom: 16px; }
+.pt-item { flex: 1; text-align: center; position: relative; }
+.pt-item::before { content: ''; position: absolute; top: 11px; left: 50%; right: -50%; height: 2px; background: var(--border); z-index: 0; }
+.pt-item:last-child::before { display: none; }
+.pt-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; margin: 0 auto 5px; position: relative; z-index: 1; }
+.pt-dot.p1 { border-color: var(--amber); color: var(--amber); }
+.pt-dot.p2 { border-color: var(--blue); color: var(--blue); }
+.pt-dot.p3 { border-color: var(--green); color: var(--green); }
+.pt-label { font-size: 8px; color: var(--muted); }
+.pt-range { font-size: 7px; color: var(--dim); }
+
+/* SUPPLEMENT ROW */
+.supp-row { display: flex; gap: 10px; padding: 10px 13px; border-bottom: 1px solid var(--border); align-items: center; }
+.supp-row:last-child { border-bottom: none; }
+.supp-name { font-size: 11.5px; font-weight: 500; color: var(--text); flex: 1; }
+.supp-dose { font-size: 9px; color: var(--muted); }
+.supp-reason { font-size: 8.5px; color: var(--blue); background: #e6eef8; padding: 2px 6px; border-radius: 3px; }
+
+/* UTIL */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.highlight-box { padding: 12px 13px; border-radius: 8px; margin-bottom: 10px; }
+.h-green { background: #edf7f1; border: 1px solid #b8dcc4; }
+.h-red { background: #fde8e6; border: 1px solid #f0b8b2; }
+.h-amber { background: #fef3e2; border: 1px solid #f0d090; }
+.h-blue { background: #e6eef8; border: 1px solid #b0c8e8; }
+.hb-title { font-size: 10px; font-weight: 600; margin-bottom: 5px; letter-spacing: 0.04em; }
+.hb-text { font-size: 9.5px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Saim · 85kg · 5'10" · Male</div>
+  <div class="header-title">90-Day <span>Health</span> Protocol</div>
+  <div class="header-sub">LDL · ALT · BP · Visceral Fat Intervention</div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('workout',this)">Workout</div>
+    <div class="tab" onclick="switchTab('meals',this)">Meal Plan</div>
+    <div class="tab" onclick="switchTab('avoid',this)">Avoid</div>
+    <div class="tab" onclick="switchTab('track',this)">Track</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ════════════════ WORKOUT ════════════════ -->
+<div id="panel-workout" class="panel active">
+
+  <div class="warning-banner">
+    <strong>⚕ MEDICAL NOTE</strong>
+    LDL 190+, elevated ALT, and BP 130s at 31 is clinically significant. Please consult your GP or cardiologist — these workout and diet changes are supportive, not a substitute for medical evaluation. Statins or other interventions may be appropriate.
+  </div>
+
+  <div class="sec-label" style="margin-top:16px">Why The Program Needs Tweaking</div>
+  <div class="highlight-box h-amber">
+    <div class="hb-title" style="color:var(--amber)">🫀 Your Cardiovascular Load Is Too High Right Now</div>
+    <div class="hb-text" style="color:#7a5010">With BP in the 130s and very high LDL, your current 5×3–5 heavy loading on the main lifts creates significant intra-abdominal pressure and acute BP spikes. This isn't a reason to stop lifting — it's a reason to restructure temporarily until your numbers improve.</div>
+  </div>
+
+  <div class="sec-label">Workout Tweaks (Apply Now)</div>
+  <div class="card">
+    <div class="tweak">
+      <div class="tweak-icon" style="background:#fde8e6">🔻</div>
+      <div>
+        <div class="tweak-title">Reduce Max Strength Sets Temporarily</div>
+        <div class="tweak-desc">5×3–5 on squat, deadlift, bench creates extreme Valsalva pressure — dangerous with BP 130s. Drop to controlled hypertrophy rep ranges until BP normalises.</div>
+        <div>
+          <span class="tweak-change old">Was: 5×3–5 @90%+ effort</span>
+          <span class="tweak-change new">Now: 4×6–8 @75–80% effort</span>
+        </div>
+      </div>
+    </div>
+    <div class="tweak">
+      <div class="tweak-icon" style="background:#e8f5ed">➕</div>
+      <div>
+        <div class="tweak-title">Add Zone 2 Cardio — 4x/Week</div>
+        <div class="tweak-desc">Zone 2 (conversational pace, ~60–70% max HR) is the single most evidence-backed intervention for LDL reduction, visceral fat loss, and BP normalisation. Replace Day 3 intervals with Zone 2 for 90 days.</div>
+        <div>
+          <span class="tweak-change old">Was: Intervals Day 3 only</span>
+          <span class="tweak-change new">Now: 35–45 min Zone 2, 4x/week</span>
+        </div>
+      </div>
+    </div>
+    <div class="tweak">
+      <div class="tweak-icon" style="background:#e6eef8">🚶</div>
+      <div>
+        <div class="tweak-title">Post-Meal Walks — Every Day</div>
+        <div class="tweak-desc">10–15 min walk after your largest meal dramatically reduces postprandial glucose and triglyceride spikes, which directly impacts LDL particle size and insulin sensitivity. Non-negotiable for your profile.</div>
+        <div>
+          <span class="tweak-change new">Add: 10–15 min walk after dinner daily</span>
+        </div>
+      </div>
+    </div>
+    <div class="tweak">
+      <div class="tweak-icon" style="background:#fef3e2">⚠️</div>
+      <div>
+        <div class="tweak-title">No Breath-Holding on Heavy Lifts</div>
+        <div class="tweak-desc">Avoid full Valsalva maneuver on heavy sets. Use controlled breathing — exhale on exertion. Reduces acute BP spikes significantly.</div>
+        <div>
+          <span class="tweak-change new">Technique: Exhale on concentric, inhale on eccentric</span>
+        </div>
+      </div>
+    </div>
+    <div class="tweak">
+      <div class="tweak-icon" style="background:#e8f5ed">🏃</div>
+      <div>
+        <div class="tweak-title">Deadlift — Reduce to 3×5 with Moderate Load</div>
+        <div class="tweak-desc">Deadlifts create the highest systemic BP elevation of any lift. Keep them — they're great for overall metabolic health — but reduce to moderate intensity for 90 days.</div>
+        <div>
+          <span class="tweak-change old">Was: 4×3–5 max effort</span>
+          <span class="tweak-change new">Now: 3×5 @70% 1RM, controlled</span>
+        </div>
+      </div>
+    </div>
+    <div class="tweak">
+      <div class="tweak-icon" style="background:#e8f5ed">💪</div>
+      <div>
+        <div class="tweak-title">Keep All Hypertrophy Work</div>
+        <div class="tweak-desc">Muscle mass is your biggest metabolic ally — it improves insulin sensitivity and LDL clearance. All accessory work stays. Volume-based training at moderate intensity is ideal for your metabolic goals.</div>
+        <div>
+          <span class="tweak-change new">Keep: All accessory + isolation work unchanged</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Revised Weekly Structure</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 1 — Upper Hypertrophy</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">4×6–8 on compounds, accessories unchanged</div></div>
+        <span class="badge badge-blue">WEIGHTS</span>
+      </div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 2 — Lower Hypertrophy</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">Squat 4×6–8, hip thrust, accessories</div></div>
+        <span class="badge badge-blue">WEIGHTS</span>
+      </div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 3 — Zone 2 Cardio</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">40 min incline walk or easy cycling, 60–70% max HR</div></div>
+        <span class="badge badge-green">CARDIO</span>
+      </div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 4 — Upper Volume</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">Incline DB, cables, shoulders, arms — unchanged</div></div>
+        <span class="badge badge-blue">WEIGHTS</span>
+      </div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 5 — Lower + Deadlift</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">Deadlift 3×5 @70%, split squat, accessories</div></div>
+        <span class="badge badge-blue">WEIGHTS</span>
+      </div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 6 — Zone 2 + Weak Points</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">35–40 min walk, optional light accessory pump</div></div>
+        <span class="badge badge-green">CARDIO</span>
+      </div>
+      <div style="padding:11px 13px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;font-weight:500">Day 7 — Rest + Walk</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">Full rest but 15 min post-dinner walk mandatory</div></div>
+        <span class="badge" style="background:#f4f0ea;color:var(--muted);border:1px solid var(--dim)">REST</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Supplements (Evidence-Based for Your Profile)</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div class="supp-row"><span class="supp-name">Omega-3 Fish Oil</span><span class="supp-dose">2–4g EPA+DHA/day</span><span class="supp-reason">↓ Triglycerides + LDL</span></div>
+      <div class="supp-row"><span class="supp-name">Psyllium Husk</span><span class="supp-dose">10g before meals</span><span class="supp-reason">↓ LDL (soluble fibre)</span></div>
+      <div class="supp-row"><span class="supp-name">Magnesium Glycinate</span><span class="supp-dose">400mg before bed</span><span class="supp-reason">↓ BP + sleep quality</span></div>
+      <div class="supp-row"><span class="supp-name">Vitamin D3 + K2</span><span class="supp-dose">4000 IU D3 + 100mcg K2</span><span class="supp-reason">Arterial health + BP</span></div>
+      <div class="supp-row"><span class="supp-name">Berberine</span><span class="supp-dose">500mg 2–3x/day with meals</span><span class="supp-reason">↓ LDL, insulin sensitivity</span></div>
+      <div class="supp-row" style="border-bottom:none"><span class="supp-name">Coenzyme Q10</span><span class="supp-dose">200mg/day</span><span class="supp-reason">Cardiovascular support</span></div>
+    </div>
+  </div>
+  <div style="font-size:9px;color:var(--muted);padding:0 4px;line-height:1.7">⚕ Discuss Berberine and Omega-3 dosing with your doctor, especially if any medication is prescribed. Berberine can interact with some drugs.</div>
+
+</div>
+
+<!-- ════════════════ MEAL PLAN ════════════════ -->
+<div id="panel-meals" class="panel">
+
+  <div class="phase-timeline" style="margin-top:4px">
+    <div class="pt-item"><div class="pt-dot p1">1</div><div class="pt-label">Reset</div><div class="pt-range">Days 1–30</div></div>
+    <div class="pt-item"><div class="pt-dot p2">2</div><div class="pt-label">Optimise</div><div class="pt-range">Days 31–60</div></div>
+    <div class="pt-item"><div class="pt-dot p3">3</div><div class="pt-label">Sustain</div><div class="pt-range">Days 61–90</div></div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase-header" style="background:#5a3e10">
+    <div class="phase-num">PHASE 01 — DAYS 1–30</div>
+    <div class="phase-title">Metabolic Reset</div>
+    <div class="phase-subtitle">Eliminate hidden sat-fat. Build fibre. Establish protein base.</div>
+    <div class="phase-goals">
+      <span class="pg">↓ LDL contribution</span>
+      <span class="pg">↓ Visceral fat</span>
+      <span class="pg">Gut microbiome repair</span>
+    </div>
+  </div>
+
+  <div class="sec-label">Daily Targets — Phase 1</div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="macro-strip">
+      <div class="macro-cell"><div class="macro-val" style="color:var(--green)">2,400</div><div class="macro-lbl">CALORIES</div></div>
+      <div class="macro-cell"><div class="macro-val" style="color:var(--blue)">180g</div><div class="macro-lbl">PROTEIN</div></div>
+      <div class="macro-cell"><div class="macro-val" style="color:var(--amber)">220g</div><div class="macro-lbl">CARBS</div></div>
+      <div class="macro-cell"><div class="macro-val" style="color:var(--red)">65g</div><div class="macro-lbl">FAT</div></div>
+    </div>
+    <div style="padding:9px 13px;font-size:9px;color:var(--muted)">Sat fat capped at 10–12g/day. Fibre target: 35g+/day. No cream, no ghee, no fried.</div>
+  </div>
+
+  <div class="sec-label">Sample Day — Phase 1</div>
+
+  <div class="meal-card" id="mc-0">
+    <div class="meal-header" onclick="togMeal('m0')">
+      <div><div class="meal-time">06:30 AM · PRE-WORKOUT</div><div class="meal-name">Oats + Egg Whites</div></div>
+      <div style="text-align:right"><div class="meal-macro">~520 kcal · 38g P</div><div class="meal-arrow" id="ma-m0">▾</div></div>
+    </div>
+    <div class="meal-body" id="mb-m0">
+      <div style="height:8px"></div>
+      <div class="meal-item"><span class="meal-item-name">Rolled oats (dry)</span><span class="meal-item-qty">80g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Egg whites</span><span class="meal-item-qty">200ml (≈6 whites)</span></div>
+      <div class="meal-item"><span class="meal-item-name">Banana</span><span class="meal-item-qty">1 medium</span></div>
+      <div class="meal-item"><span class="meal-item-name">Ground flaxseed</span><span class="meal-item-qty">1 tbsp</span></div>
+      <div class="meal-item"><span class="meal-item-name">Psyllium husk</span><span class="meal-item-qty">5g (in water, 30 min before)</span></div>
+      <div class="meal-note">Cook oats in water, not milk. Add flax for soluble fibre — directly lowers LDL. Egg whites only — the yolk sat fat adds up across the day.</div>
+    </div>
+  </div>
+
+  <div class="meal-card">
+    <div class="meal-header" onclick="togMeal('m1')">
+      <div><div class="meal-time">10:00 AM · MID-MORNING</div><div class="meal-name">Greek Yoghurt + Walnuts</div></div>
+      <div style="text-align:right"><div class="meal-macro">~280 kcal · 22g P</div><div class="meal-arrow" id="ma-m1">▾</div></div>
+    </div>
+    <div class="meal-body" id="mb-m1">
+      <div style="height:8px"></div>
+      <div class="meal-item"><span class="meal-item-name">Low-fat Greek yoghurt (0%)</span><span class="meal-item-qty">200g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Walnuts (not roasted/salted)</span><span class="meal-item-qty">20g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Blueberries or apple</span><span class="meal-item-qty">80g</span></div>
+      <div class="meal-note">Walnuts contain ALA omega-3 which supports LDL reduction. Use 0% fat Greek yoghurt — full-fat dairy significantly raises LDL. Keep to 20g walnuts max.</div>
+    </div>
+  </div>
+
+  <div class="meal-card">
+    <div class="meal-header" onclick="togMeal('m2')">
+      <div><div class="meal-time">01:00 PM · LUNCH</div><div class="meal-name">Grilled Chicken + Lentil Dal + Brown Rice</div></div>
+      <div style="text-align:right"><div class="meal-macro">~620 kcal · 52g P</div><div class="meal-arrow" id="ma-m2">▾</div></div>
+    </div>
+    <div class="meal-body" id="mb-m2">
+      <div style="height:8px"></div>
+      <div class="meal-item"><span class="meal-item-name">Grilled chicken breast</span><span class="meal-item-qty">180g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Red lentil dal (olive oil base)</span><span class="meal-item-qty">150g cooked</span></div>
+      <div class="meal-item"><span class="meal-item-name">Brown rice or quinoa</span><span class="meal-item-qty">100g cooked</span></div>
+      <div class="meal-item"><span class="meal-item-name">Cucumber + tomato salad</span><span class="meal-item-qty">large portion</span></div>
+      <div class="meal-item"><span class="meal-item-name">Extra virgin olive oil (dressing)</span><span class="meal-item-qty">1 tsp</span></div>
+      <div class="meal-note">Lentils are a top-tier LDL-lowering food — soluble fibre binds bile acids. Make dal with olive oil only, no cream, no butter, no ghee. Generous salad = fibre.</div>
+    </div>
+  </div>
+
+  <div class="meal-card">
+    <div class="meal-header" onclick="togMeal('m3')">
+      <div><div class="meal-time">04:00 PM · POST-WORKOUT</div><div class="meal-name">Protein Shake + Oat Milk</div></div>
+      <div style="text-align:right"><div class="meal-macro">~320 kcal · 38g P</div><div class="meal-arrow" id="ma-m3">▾</div></div>
+    </div>
+    <div class="meal-body" id="mb-m3">
+      <div style="height:8px"></div>
+      <div class="meal-item"><span class="meal-item-name">Whey isolate protein</span><span class="meal-item-qty">1.5 scoops (~45g)</span></div>
+      <div class="meal-item"><span class="meal-item-name">Oat milk (unsweetened)</span><span class="meal-item-qty">300ml</span></div>
+      <div class="meal-item"><span class="meal-item-name">Banana (optional)</span><span class="meal-item-qty">½ medium</span></div>
+      <div class="meal-note">Whey isolate over concentrate — lower fat. Oat milk contains beta-glucan which actively lowers LDL. Use unsweetened only. Add Omega-3 capsules with this meal.</div>
+    </div>
+  </div>
+
+  <div class="meal-card">
+    <div class="meal-header" onclick="togMeal('m4')">
+      <div><div class="meal-time">07:30 PM · DINNER</div><div class="meal-name">Salmon + Roasted Vegetables + Chickpeas</div></div>
+      <div style="text-align:right"><div class="meal-macro">~580 kcal · 48g P</div><div class="meal-arrow" id="ma-m4">▾</div></div>
+    </div>
+    <div class="meal-body" id="mb-m4">
+      <div style="height:8px"></div>
+      <div class="meal-item"><span class="meal-item-name">Salmon fillet (baked/grilled)</span><span class="meal-item-qty">180g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Chickpeas (canned, rinsed)</span><span class="meal-item-qty">120g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Roasted broccoli + courgette</span><span class="meal-item-qty">250g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Sweet potato</span><span class="meal-item-qty">150g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Extra virgin olive oil</span><span class="meal-item-qty">1 tsp for roasting</span></div>
+      <div class="meal-note">Salmon 3–4x/week is ideal — EPA+DHA directly reduces triglycerides and LDL particle count. Chickpeas are another soluble fibre powerhouse. Take post-dinner walk 10 min after eating.</div>
+    </div>
+  </div>
+
+  <div class="meal-card">
+    <div class="meal-header" onclick="togMeal('m5')">
+      <div><div class="meal-time">09:30 PM · OPTIONAL SNACK</div><div class="meal-name">Cottage Cheese + Psyllium</div></div>
+      <div style="text-align:right"><div class="meal-macro">~180 kcal · 24g P</div><div class="meal-arrow" id="ma-m5">▾</div></div>
+    </div>
+    <div class="meal-body" id="mb-m5">
+      <div style="height:8px"></div>
+      <div class="meal-item"><span class="meal-item-name">Low-fat cottage cheese</span><span class="meal-item-qty">150g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Psyllium husk in water</span><span class="meal-item-qty">5g</span></div>
+      <div class="meal-item"><span class="meal-item-name">Cinnamon (sprinkle)</span><span class="meal-item-qty">½ tsp</span></div>
+      <div class="meal-note">Casein-dominant protein for overnight muscle repair. Second psyllium dose ensures total daily soluble fibre target is hit — key for LDL reduction.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-header" style="background:#1a3a5a">
+    <div class="phase-num">PHASE 02 — DAYS 31–60</div>
+    <div class="phase-title">Metabolic Optimisation</div>
+    <div class="phase-subtitle">Increase variety. Refine calories. Maintain all phase 1 rules.</div>
+    <div class="phase-goals">
+      <span class="pg">↑ Caloric precision</span>
+      <span class="pg">↑ Meal variety</span>
+      <span class="pg">Continue LDL protocol</span>
+    </div>
+  </div>
+
+  <div class="sec-label">Phase 2 Adjustments</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Calories → 2,500 kcal</div><div style="font-size:9.5px;color:var(--muted)">Slight increase as you're training harder and metabolism adapts</div></div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Add Fatty Fish 4x/week</div><div style="font-size:9.5px;color:var(--muted)">Mackerel, sardines, or salmon — prioritise over chicken some days</div></div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Introduce Whole Eggs (1–2/day)</div><div style="font-size:9.5px;color:var(--muted)">Only if LDL trending down. If not — stay on whites only</div></div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Add Avocado ½ per day</div><div style="font-size:9.5px;color:var(--muted)">Monounsaturated fat — actively reduces LDL, safe daily addition</div></div>
+      <div style="padding:11px 13px"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Introduce Overnight Oats</div><div style="font-size:9.5px;color:var(--muted)">Beta-glucan content even higher in cold-soaked oats — prep night before</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-header" style="background:#1e4a2a">
+    <div class="phase-num">PHASE 03 — DAYS 61–90</div>
+    <div class="phase-title">Sustainable Lifestyle</div>
+    <div class="phase-subtitle">Lock in habits. Test flexibility. Prepare for long-term adherence.</div>
+    <div class="phase-goals">
+      <span class="pg">Blood retest at day 90</span>
+      <span class="pg">Lifestyle integration</span>
+      <span class="pg">Strength rebuild</span>
+    </div>
+  </div>
+
+  <div class="sec-label">Phase 3 Adjustments</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Calories → 2,600–2,700 kcal</div><div style="font-size:9.5px;color:var(--muted)">Lean bulk can restart if LDL has meaningfully dropped</div></div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Reintroduce 5×3–5 strength sets</div><div style="font-size:9.5px;color:var(--muted)">Only if BP has normalised — track BP weekly at home</div></div>
+      <div style="padding:11px 13px;border-bottom:1px solid var(--border)"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">One "flex" meal per week</div><div style="font-size:9.5px;color:var(--muted)">Social or family meal — not a cheat day. One meal, not one day.</div></div>
+      <div style="padding:11px 13px"><div style="font-size:11.5px;font-weight:500;margin-bottom:3px">Blood test at Day 90</div><div style="font-size:9.5px;color:var(--muted)">Retest LDL, ALT, BP, and fasting glucose. Compare to baseline.</div></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Foods That Actively Lower LDL</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="padding:9px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Oats / Beta-glucan</span><span class="badge badge-green">↓ LDL 5–10%</span></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Lentils / Chickpeas / Beans</span><span class="badge badge-green">↓ LDL 5–7%</span></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Fatty Fish (EPA+DHA)</span><span class="badge badge-green">↓ Triglycerides 15–20%</span></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Walnuts / Almonds</span><span class="badge badge-green">↓ LDL 3–5%</span></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Psyllium Husk</span><span class="badge badge-green">↓ LDL 5–8%</span></div>
+      <div style="padding:9px 13px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Extra Virgin Olive Oil</span><span class="badge badge-green">↓ LDL-P size</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════ AVOID ════════════════ -->
+<div id="panel-avoid" class="panel">
+
+  <div class="highlight-box h-red" style="margin-top:4px">
+    <div class="hb-title" style="color:var(--red)">🚨 These Are Not Suggestions</div>
+    <div class="hb-text" style="color:#7a1010">With LDL 190+, ALT elevated, and BP 130s at 31 years old, the foods below are actively accelerating cardiovascular and liver risk. Most of them you probably don't think of as "bad foods." That's the danger.</div>
+  </div>
+
+  <div id="avoid-list"></div>
+
+</div>
+
+<!-- ════════════════ TRACK ════════════════ -->
+<div id="panel-track" class="panel">
+
+  <div class="sec-label" style="margin-top:4px">Metrics To Track Weekly</div>
+  <div class="card" style="overflow:hidden">
+    <div class="metric-header-row">
+      <div class="metric-header-cell">METRIC</div>
+      <div class="metric-header-cell">NOW</div>
+      <div class="metric-header-cell">TARGET 90D</div>
+      <div class="metric-header-cell">METHOD</div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-cell"><div class="metric-label">LDL Cholesterol</div><div class="metric-sub">Blood test</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--red)">190+</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--green)">&lt;130</div></div>
+      <div class="metric-cell"><div class="metric-val" style="font-size:9px;color:var(--muted)">GP blood test</div></div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-cell"><div class="metric-label">Blood Pressure</div><div class="metric-sub">Systolic/Diastolic</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--amber)">130s</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--green)">&lt;120</div></div>
+      <div class="metric-cell"><div class="metric-val" style="font-size:9px;color:var(--muted)">Home cuff 2x/week</div></div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-cell"><div class="metric-label">ALT (Liver)</div><div class="metric-sub">Blood test</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--amber)">Mild ↑</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--green)">Normal</div></div>
+      <div class="metric-cell"><div class="metric-val" style="font-size:9px;color:var(--muted)">GP blood test</div></div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-cell"><div class="metric-label">Body Weight</div><div class="metric-sub">Morning, fasted</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--muted)">85kg</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--green)">80–82kg</div></div>
+      <div class="metric-cell"><div class="metric-val" style="font-size:9px;color:var(--muted)">Daily, avg weekly</div></div>
+    </div>
+    <div class="metric-row">
+      <div class="metric-cell"><div class="metric-label">Waist Circumference</div><div class="metric-sub">At navel</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--muted)">Measure</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--green)">↓ 3–5cm</div></div>
+      <div class="metric-cell"><div class="metric-val" style="font-size:9px;color:var(--muted)">Weekly, morning</div></div>
+    </div>
+    <div class="metric-row" style="border-bottom:none">
+      <div class="metric-cell"><div class="metric-label">Resting Heart Rate</div><div class="metric-sub">Morning, before rising</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--muted)">Measure</div></div>
+      <div class="metric-cell"><div class="metric-val" style="color:var(--green)">&lt;60 bpm</div></div>
+      <div class="metric-cell"><div class="metric-val" style="font-size:9px;color:var(--muted)">Smartwatch / manual</div></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Weekly Check-in Habits</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center"><span style="font-size:16px">📊</span><div><div style="font-size:11px;font-weight:500">Log food 5 days/week minimum</div><div style="font-size:9.5px;color:var(--muted);margin-top:1px">MyFitnessPal or Cronometer — focus on sat fat total, not just calories</div></div></div>
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center"><span style="font-size:16px">🩺</span><div><div style="font-size:11px;font-weight:500">BP reading twice per week</div><div style="font-size:9.5px;color:var(--muted);margin-top:1px">Morning before coffee. Log it. If consistently 140+ — contact GP immediately.</div></div></div>
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center"><span style="font-size:16px">😴</span><div><div style="font-size:11px;font-weight:500">Track sleep — 7.5 hr minimum</div><div style="font-size:9.5px;color:var(--muted);margin-top:1px">Poor sleep raises cortisol → raises LDL and BP. Non-negotiable metric.</div></div></div>
+      <div style="padding:10px 13px;display:flex;gap:10px;align-items:center"><span style="font-size:16px">🚶</span><div><div style="font-size:11px;font-weight:500">Daily step count — 8,000+ minimum</div><div style="font-size:9.5px;color:var(--muted);margin-top:1px">Total daily movement matters as much as gym sessions for LDL and visceral fat.</div></div></div>
+    </div>
+  </div>
+
+  <div class="sec-label">90-Day Milestone Expectations</div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">LDL reduction</span><span class="badge badge-green">15–25% possible</span></div>
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">BP improvement</span><span class="badge badge-green">5–10 mmHg systolic</span></div>
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">ALT normalisation</span><span class="badge badge-green">Likely if diet followed</span></div>
+      <div style="padding:10px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Waist reduction</span><span class="badge badge-green">3–5cm reduction</span></div>
+      <div style="padding:10px 13px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px">Weight change</span><span class="badge badge-blue">−2 to −4kg (fat)</span></div>
+    </div>
+  </div>
+
+  <div class="highlight-box h-amber" style="margin-top:14px">
+    <div class="hb-title" style="color:var(--amber)">⚠ If LDL Doesn't Drop After 90 Days</div>
+    <div class="hb-text" style="color:#7a5010">If you follow this protocol and LDL is still above 160 after 90 days, that strongly suggests familial hypercholesterolaemia — a genetic condition that diet alone cannot fully address. In that case, statin therapy becomes a very reasonable, evidence-backed conversation with your doctor. This is not a failure — it's just biology.</div>
+  </div>
+
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ── AVOID DATA ──────────────────────────────────────────────────────────────
+const avoidData = [
+  {
+    icon:"🥛", title:"Full-Fat Dairy", risk:"CRITICAL", riskClass:"badge-red",
+    items:[
+      {name:"Ghee / Clarified Butter", why:"Pure saturated fat — one tablespoon adds 7g sat fat. A single roti with ghee can use up half your daily sat fat budget.", color:"#c0392b"},
+      {name:"Full-fat milk, cream, malai", why:"Hidden in tea, curries, desserts. Switch to skimmed milk or oat milk entirely for 90 days.", color:"#c0392b"},
+      {name:"Paneer (regular)", why:"High in saturated fat from full-fat milk. If you must have it, strictly limit to 50g max, 1–2x/week only.", color:"#c0392b"},
+      {name:"Cream-based curries (korma, butter chicken)", why:"Single serving can contain 15–25g sat fat. This is likely your biggest hidden LDL driver.", color:"#e74c3c"},
+    ]
+  },
+  {
+    icon:"🍞", title:"Bakery & Processed Grains", risk:"HIGH", riskClass:"badge-amber",
+    items:[
+      {name:"Frozen parathas / store-bought roti", why:"Often made with palm oil or vanaspati (partially hydrogenated fat) — trans fats that raise LDL and lower HDL simultaneously.", color:"#b8680a"},
+      {name:"Bakery items (croissants, pastries, biscuits)", why:"Trans fats + refined flour. Even 'healthy-looking' bakery items are often high in palm shortening.", color:"#b8680a"},
+      {name:"White bread / maida products", why:"Refined carbs spike insulin → liver produces more VLDL → converts to LDL. Worsens fatty liver pattern.", color:"#b8680a"},
+    ]
+  },
+  {
+    icon:"🥩", title:"Fatty Meats & Organs", risk:"HIGH", riskClass:"badge-amber",
+    items:[
+      {name:"Mutton / Lamb (regular cuts)", why:"Very high saturated fat. If eating mutton, choose lean cuts only, trim all visible fat, maximum 1x/week.", color:"#b8680a"},
+      {name:"Chicken skin", why:"Remove it. All of it. The skin doubles the saturated fat content of the meal.", color:"#b8680a"},
+      {name:"Beef / red meat more than 1x/week", why:"Haem iron and sat fat together accelerate cardiovascular plaque formation at elevated LDL levels.", color:"#b8680a"},
+      {name:"Organ meats (liver, kidney, brain)", why:"Extremely high dietary cholesterol — especially concerning with your LDL profile.", color:"#c0392b"},
+    ]
+  },
+  {
+    icon:"🫒", title:"Wrong Oils & Fats", risk:"CRITICAL", riskClass:"badge-red",
+    items:[
+      {name:"Coconut oil", why:"67% saturated fat — higher than butter. Despite 'healthy' marketing, it significantly raises LDL. Avoid entirely for 90 days.", color:"#c0392b"},
+      {name:"Palm oil / vanaspati", why:"Found in packaged foods, frozen items, commercial frying. Read labels. This is hidden everywhere.", color:"#c0392b"},
+      {name:"Vegetable shortening / dalda", why:"Trans fat source. Raises LDL, lowers HDL — worst possible fat for your profile.", color:"#c0392b"},
+    ]
+  },
+  {
+    icon:"🧃", title:"Drinks & Hidden Sugar", risk:"MODERATE", riskClass:"badge-blue",
+    items:[
+      {name:"Sweetened chai with full-fat milk (2+ cups/day)", why:"The combination of sat fat from milk and sugar raises both LDL and triglycerides. Switch to black tea or oat milk chai.", color:"#1a4a7a"},
+      {name:"Fruit juices (even 'natural')", why:"Fructose without fibre directly converts to liver fat — worsens ALT and promotes visceral fat.", color:"#1a4a7a"},
+      {name:"Soft drinks & energy drinks", why:"High fructose → triglycerides → liver stress → worsens your full metabolic picture.", color:"#1a4a7a"},
+      {name:"Alcohol", why:"Raises triglycerides and puts direct stress on an already mildly elevated ALT. Avoid for 90 days.", color:"#1a4a7a"},
+    ]
+  },
+  {
+    icon:"🍩", title:"Processed & Fried Foods", risk:"HIGH", riskClass:"badge-amber",
+    items:[
+      {name:"Samosas, pakoras, spring rolls", why:"Deep-fried in reused or palm oil. Calorie-dense, oxidised fat — direct LDL contributor.", color:"#b8680a"},
+      {name:"Chips, crisps, commercial snacks", why:"Palm oil base + refined carbs + excess sodium → LDL + BP both worsen.", color:"#b8680a"},
+      {name:"Fast food (anything fried)", why:"Even occasional fast food (1–2x/week) can undermine an otherwise clean diet at your LDL levels.", color:"#b8680a"},
+    ]
+  },
+  {
+    icon:"🥜", title:"Overconsumption Traps", risk:"WATCH", riskClass:"badge-blue",
+    items:[
+      {name:"Dates in excess (more than 3–4/day)", why:"High natural sugar — raises triglycerides when consumed beyond small amounts. 2–3 dates max, occasionally.", color:"#1a4a7a"},
+      {name:"Nuts beyond 30g/day", why:"Healthy fat but calorie-dense. Walnuts and almonds are great — but measured. Cashews are higher in sat fat — limit.", color:"#1a4a7a"},
+      {name:"Avocado more than ½/day", why:"Great monounsaturated fat, but calorie-dense. Half an avocado per day is the sweet spot.", color:"#1a4a7a"},
+    ]
+  },
+];
+
+function renderAvoid(){
+  const container=document.getElementById('avoid-list');
+  container.innerHTML=avoidData.map((cat,ci)=>`
+    <div class="avoid-cat">
+      <div class="avoid-cat-header" onclick="togAvoid(${ci})">
+        <span class="avoid-cat-icon">${cat.icon}</span>
+        <span class="avoid-cat-title">${cat.title}</span>
+        <span class="badge ${cat.riskClass} avoid-cat-risk">${cat.risk}</span>
+      </div>
+      <div class="avoid-items" id="av-${ci}">
+        ${cat.items.map(item=>`
+          <div class="avoid-item">
+            <div class="avoid-dot" style="background:${item.color}"></div>
+            <div><div class="avoid-item-name">${item.name}</div><div class="avoid-item-why">${item.why}</div></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+let openAvoid=null;
+function togAvoid(i){
+  if(openAvoid!==null&&openAvoid!==i){
+    const prev=document.getElementById(`av-${openAvoid}`);
+    if(prev)prev.classList.remove('open');
+  }
+  const el=document.getElementById(`av-${i}`);
+  el.classList.toggle('open');
+  openAvoid=el.classList.contains('open')?i:null;
+}
+
+// ── MEAL TOGGLE ─────────────────────────────────────────────────────────────
+let openMeal=null;
+function togMeal(id){
+  if(openMeal&&openMeal!==id){
+    const pb=document.getElementById(`mb-${openMeal}`);
+    const pa=document.getElementById(`ma-${openMeal}`);
+    if(pb){pb.classList.remove('open');}
+    if(pa)pa.classList.remove('open');
+  }
+  const b=document.getElementById(`mb-${id}`);
+  const a=document.getElementById(`ma-${id}`);
+  b.classList.toggle('open');
+  a.classList.toggle('open');
+  openMeal=b.classList.contains('open')?id:null;
+}
+
+// ── TAB SWITCH ───────────────────────────────────────────────────────────────
+function switchTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderAvoid();
+</script>
+</body>
+</html>
