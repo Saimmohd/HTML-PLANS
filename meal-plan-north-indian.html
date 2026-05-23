@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Saim's Meal Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0f0d0a;
+  --surface: #151210;
+  --card: #1a1612;
+  --border: #2a2420;
+  --text: #e8e0d0;
+  --muted: #6a6058;
+  --dim: #2e2820;
+  --gold: #c8963c;
+  --gold-light: #e8b86a;
+  --green: #4a8c5c;
+  --red: #8c3a2a;
+  --blue: #2a5a8c;
+  --spice: #c84a2a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* HEADER */
+.header {
+  padding: 28px 18px 0;
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid var(--border);
+}
+.header-inner { max-width: 520px; margin: 0 auto; }
+.eyebrow { font-size: 8px; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.title-main { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; line-height: 1; color: var(--text); }
+.title-main em { font-style: italic; color: var(--gold); }
+.subtitle { font-size: 9px; color: var(--muted); margin-top: 6px; letter-spacing: 0.06em; line-height: 1.6; }
+
+/* FILTER TABS */
+.filters { display: flex; gap: 4px; margin-top: 14px; padding-bottom: 14px; overflow-x: auto; }
+.filter-btn { padding: 5px 12px; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 20px; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; font-family: 'DM Mono', monospace; white-space: nowrap; transition: all 0.18s; }
+.filter-btn.active { background: var(--gold); color: #0f0d0a; border-color: var(--gold); font-weight: 500; }
+
+/* CONTENT */
+.content { padding: 16px 18px 80px; max-width: 520px; margin: 0 auto; }
+
+/* NOTICE */
+.notice { padding: 11px 13px; border: 1px solid rgba(200,150,60,0.2); border-left: 3px solid var(--gold); border-radius: 6px; background: rgba(200,150,60,0.04); font-size: 9px; color: #7a6030; line-height: 1.75; margin-bottom: 16px; }
+.notice strong { color: var(--gold); display: block; margin-bottom: 3px; font-size: 9.5px; }
+
+/* MEAL CARDS */
+.meal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.meal-card.hidden { display: none; }
+.meal-card:active { border-color: var(--gold); }
+
+.meal-top { padding: 14px 14px 12px; cursor: pointer; }
+.meal-row1 { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.meal-number { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--dim); line-height: 1; flex-shrink: 0; margin-top: -4px; }
+.meal-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--text); line-height: 1.2; flex: 1; }
+.meal-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.tag { font-size: 7px; padding: 2px 7px; border-radius: 10px; letter-spacing: 0.07em; white-space: nowrap; }
+.tag-protein { background: rgba(74,140,92,0.12); color: #6ab880; border: 1px solid rgba(74,140,92,0.25); }
+.tag-ldl { background: rgba(200,150,60,0.1); color: var(--gold); border: 1px solid rgba(200,150,60,0.25); }
+.tag-fish { background: rgba(42,90,140,0.12); color: #6aA0d0; border: 1px solid rgba(42,90,140,0.25); }
+.tag-veggie { background: rgba(74,140,92,0.08); color: #5aa870; border: 1px solid rgba(74,140,92,0.2); }
+.tag-batch { background: rgba(200,150,60,0.08); color: #b88840; border: 1px solid rgba(200,150,60,0.2); }
+.tag-halal { background: rgba(200,150,60,0.06); color: #8a6828; border: 1px solid rgba(200,150,60,0.15); }
+
+.meal-desc { font-size: 10px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
+
+.macro-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border-radius: 6px; overflow: hidden; }
+.macro-cell { background: var(--surface); padding: 7px 5px; text-align: center; }
+.macro-val { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 700; color: var(--text); line-height: 1; }
+.macro-lbl { font-size: 6.5px; color: var(--muted); letter-spacing: 0.08em; margin-top: 2px; }
+
+.expand-hint { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--dim); }
+.expand-text { font-size: 8px; color: var(--muted); letter-spacing: 0.08em; }
+.expand-arrow { font-size: 10px; color: var(--muted); transition: transform 0.22s; display: inline-block; }
+.expand-arrow.open { transform: rotate(180deg); }
+
+/* DETAIL */
+.meal-detail { display: none; border-top: 1px solid var(--dim); }
+.meal-detail.open { display: block; animation: fd 0.25s ease; }
+@keyframes fd { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+.detail-section { padding: 14px; border-bottom: 1px solid var(--dim); }
+.detail-section:last-child { border-bottom: none; }
+.ds-label { font-size: 7.5px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+
+/* INGREDIENTS */
+.ing-list { display: flex; flex-direction: column; gap: 5px; }
+.ing-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--dim); }
+.ing-item:last-child { border-bottom: none; }
+.ing-name { font-size: 10.5px; color: var(--text); }
+.ing-qty { font-size: 9px; color: var(--muted); }
+.ing-swap { font-size: 8px; color: var(--gold); margin-top: 1px; font-style: italic; }
+
+/* METHOD */
+.method-steps { display: flex; flex-direction: column; gap: 10px; }
+.step { display: flex; gap: 10px; align-items: flex-start; }
+.step-num { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--gold); flex-shrink: 0; font-family: 'Cormorant Garamond', serif; font-weight: 700; }
+.step-text { font-size: 10px; color: var(--muted); line-height: 1.7; padding-top: 1px; }
+
+/* HEALTH NOTE */
+.health-note { padding: 10px 12px; background: rgba(200,150,60,0.05); border-radius: 6px; border: 1px solid rgba(200,150,60,0.15); }
+.hn-title { font-size: 8.5px; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 5px; }
+.hn-text { font-size: 9.5px; color: #6a5830; line-height: 1.7; }
+
+/* BATCH NOTE */
+.batch-note { padding: 10px 12px; background: rgba(74,140,92,0.05); border-radius: 6px; border: 1px solid rgba(74,140,92,0.15); }
+.bn-title { font-size: 8.5px; color: #6ab880; letter-spacing: 0.08em; margin-bottom: 5px; }
+.bn-text { font-size: 9.5px; color: #3a5830; line-height: 1.7; }
+
+/* PAIR WITH */
+.pair-box { display: flex; gap: 8px; align-items: center; }
+.pair-chip { font-size: 9px; padding: 4px 10px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+
+/* SECTION DIVIDER */
+.week-label { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: var(--muted); letter-spacing: 0.06em; margin: 20px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--dim); display: flex; justify-content: space-between; align-items: center; }
+.week-tag { font-family: 'DM Mono', monospace; font-size: 7.5px; letter-spacing: 0.1em; color: var(--gold); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Saim · North Indian Muslim · Batch Cook · Health Protocol</div>
+    <div class="title-main">The <em>Halal</em> Health Table</div>
+    <div class="subtitle">10 batch-cook meal combinations · LDL-conscious · No cream · Full flavour</div>
+    <div class="filters">
+      <div class="filter-btn active" onclick="filter('all',this)">All Meals</div>
+      <div class="filter-btn" onclick="filter('protein',this)">High Protein</div>
+      <div class="filter-btn" onclick="filter('fish',this)">Fish (Try These)</div>
+      <div class="filter-btn" onclick="filter('veggie',this)">Veggie / Dal</div>
+      <div class="filter-btn" onclick="filter('ldl',this)">↓ LDL Focus</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="notice">
+    <strong>📋 HOW TO USE THIS</strong>
+    Each card is a <strong>complete 3-day batch</strong>. Pick 2 cards per cook — one protein dish, one dal/veggie/salad — and that's your meals for 3 days. Rotate through them across the 90-day protocol. All recipes use olive oil only, no ghee, no cream. Tandoori-style dishes use yoghurt marinade — the yoghurt fat is minimal and fine.
+  </div>
+
+  <div class="week-label">Protein Dishes — Pick One Per Batch <span class="week-tag">COOK DAY</span></div>
+  <div id="meal-list"></div>
+
+</div>
+
+<script>
+const meals = [
+  {
+    id: 1,
+    name: "Tandoori Chicken — Reimagined",
+    cats: ["protein","ldl"],
+    tags: ["HIGH PROTEIN","↓ LDL","HALAL","BATCH x3"],
+    tagClasses: ["tag-protein","tag-ldl","tag-halal","tag-batch"],
+    desc: "The classic you love — all the smoky char and spice, zero cream. Marinated in low-fat yoghurt, lemon, and spices. Grilled or oven-roasted. Tastes identical to restaurant-style when done right.",
+    macros: { kcal: 520, protein: "52g", carbs: "8g", fat: "12g" },
+    serves: "Serves 3 days (6 pieces)",
+    ingredients: [
+      { name: "Chicken thighs (skinless)", qty: "1kg", swap: "Chicken breast works too — less juicy but lower fat" },
+      { name: "Low-fat yoghurt (0%)", qty: "150g", swap: "Do NOT use full-fat — sat fat adds up fast" },
+      { name: "Lemon juice", qty: "2 lemons" },
+      { name: "Ginger-garlic paste", qty: "2 tbsp" },
+      { name: "Kashmiri red chilli powder", qty: "1.5 tsp", swap: "Gives colour without too much heat" },
+      { name: "Cumin powder", qty: "1 tsp" },
+      { name: "Garam masala", qty: "1 tsp" },
+      { name: "Turmeric", qty: "½ tsp", swap: "Anti-inflammatory — don't skip" },
+      { name: "Olive oil", qty: "1 tbsp" },
+      { name: "Salt", qty: "to taste" },
+    ],
+    method: [
+      "Score chicken thighs 3–4 times deep — marinade needs to penetrate.",
+      "Mix all marinade ingredients. Coat chicken thoroughly. Refrigerate minimum 4 hours, ideally overnight.",
+      "Preheat oven to 220°C (or use grill). Place on a wire rack over a baking tray.",
+      "Roast 25–30 min, turning once at 15 min. Finish under broiler 3–4 min for char.",
+      "Rest 5 min before serving. Batch stores refrigerated 3 days perfectly.",
+    ],
+    health: "Low-fat yoghurt marinade gives all the flavour with minimal saturated fat. Turmeric is anti-inflammatory. Kashmiri chilli is mostly colour, not capsaicin-heavy. Olive oil keeps it heart-safe.",
+    batch: "Cook full 1kg batch Sunday. Reheat in oven 5 min or microwave with a damp paper towel. Works cold in wraps too.",
+    pairWith: ["Chana Dal", "Lentil Shorba", "Big Salad Bowl"],
+  },
+  {
+    id: 2,
+    name: "Baked Salmon with Desi Spices",
+    cats: ["protein","fish","ldl"],
+    tags: ["HIGH PROTEIN","↓ LDL KING","FISH","BATCH x3"],
+    tagClasses: ["tag-protein","tag-ldl","tag-fish","tag-batch"],
+    desc: "This is the fish dish to start with if you're new to fish. Salmon is fatty and rich — not 'fishy' tasting like cheap white fish. Marinated in turmeric, cumin, coriander, and lemon — familiar flavour profile for you.",
+    macros: { kcal: 480, protein: "48g", carbs: "4g", fat: "22g" },
+    serves: "Serves 3 days (3 fillets)",
+    ingredients: [
+      { name: "Salmon fillets (skinless)", qty: "600g (3 × 200g)", swap: "Atlantic or Pacific both work" },
+      { name: "Lemon juice", qty: "2 lemons" },
+      { name: "Turmeric", qty: "1 tsp" },
+      { name: "Cumin powder", qty: "1 tsp" },
+      { name: "Coriander powder", qty: "1 tsp" },
+      { name: "Kashmiri chilli", qty: "½ tsp" },
+      { name: "Ginger-garlic paste", qty: "1 tbsp" },
+      { name: "Olive oil", qty: "1 tbsp" },
+      { name: "Fresh coriander", qty: "handful for finish" },
+      { name: "Salt", qty: "to taste" },
+    ],
+    method: [
+      "Mix lemon juice, spices, ginger-garlic paste, olive oil into a paste.",
+      "Coat salmon fillets thoroughly. Marinate 30 min minimum (don't go longer — acid starts cooking the fish).",
+      "Line a baking tray with foil. Place fillets. Bake at 200°C for 15–18 min.",
+      "Fish is done when it flakes easily with a fork. Don't overcook — it dries out.",
+      "Squeeze fresh lemon and fresh coriander on top before serving.",
+    ],
+    health: "Salmon EPA+DHA is 2g+ per fillet — this IS your fish oil supplement in food form. Directly lowers triglycerides 15–20%, improves LDL particle size, reduces liver inflammation. Have 3–4x per week if you can build the habit.",
+    batch: "Cook all 3 fillets together. Salmon reheats well — microwave 90 seconds covered, or eat cold over a salad (excellent). Store max 3 days refrigerated.",
+    pairWith: ["Big Salad Bowl", "Roasted Veg + Chickpeas", "Brown Rice + Raita"],
+  },
+  {
+    id: 3,
+    name: "Achari Chicken (No Oil Curry)",
+    cats: ["protein"],
+    tags: ["HIGH PROTEIN","HALAL","BATCH x3","CURRY"],
+    tagClasses: ["tag-protein","tag-halal","tag-batch","tag-ldl"],
+    desc: "Tangy, aromatic pickle-spiced chicken curry — sharp, punchy, zero cream. Uses a tomato-onion base with pickling spices. Tastes rich without any dairy fat. This is the cream curry replacement.",
+    macros: { kcal: 540, protein: "50g", carbs: "14g", fat: "14g" },
+    serves: "Serves 3 days (1kg chicken)",
+    ingredients: [
+      { name: "Chicken breast or thigh (skinless)", qty: "1kg" },
+      { name: "Tomatoes (chopped)", qty: "4 large" },
+      { name: "Onions", qty: "2 large" },
+      { name: "Ginger-garlic paste", qty: "2 tbsp" },
+      { name: "Mustard seeds", qty: "1 tsp" },
+      { name: "Fennel seeds", qty: "1 tsp" },
+      { name: "Nigella seeds (kalonji)", qty: "½ tsp" },
+      { name: "Fenugreek seeds", qty: "¼ tsp" },
+      { name: "Kashmiri chilli", qty: "1.5 tsp" },
+      { name: "Turmeric", qty: "½ tsp" },
+      { name: "Amchur (dry mango powder)", qty: "1 tsp", swap: "Gives the tang without cream" },
+      { name: "Olive oil", qty: "1.5 tbsp" },
+      { name: "Salt", qty: "to taste" },
+    ],
+    method: [
+      "Heat olive oil in a heavy pan. Add mustard, fennel, nigella, fenugreek seeds — let them splutter 30 seconds.",
+      "Add finely chopped onion. Cook on medium-low until golden (10–12 min) — don't rush this.",
+      "Add ginger-garlic paste. Cook 2 min until raw smell goes.",
+      "Add chopped tomatoes, turmeric, chilli. Cook down until oil separates (8–10 min).",
+      "Add chicken pieces. Coat in masala. Cover and cook 20–25 min on medium, stirring occasionally.",
+      "Add amchur and salt. Finish with fresh coriander. Consistency should be thick, not watery.",
+    ],
+    health: "No cream, no ghee. Tomato base provides lycopene which is cardioprotective. Fenugreek seeds have evidence for mild LDL lowering. Olive oil only — heart-safe fat throughout.",
+    batch: "This is a perfect batch curry — actually improves in flavour on day 2 and 3 as spices deepen. Store refrigerated. Reheats perfectly on hob with a splash of water.",
+    pairWith: ["Chana Dal", "Brown Rice", "Cucumber Raita"],
+  },
+  {
+    id: 4,
+    name: "Masala Baked Fish (Tilapia / Cod)",
+    cats: ["protein","fish","ldl"],
+    tags: ["HIGH PROTEIN","↓ LDL","FISH — MILD","BATCH x3"],
+    tagClasses: ["tag-protein","tag-ldl","tag-fish","tag-batch"],
+    desc: "For when salmon feels too rich. Tilapia and cod are very mild white fish — almost no 'fish' flavour. The desi spice crust does all the work. Think of it as a grilled protein with great spicing.",
+    macros: { kcal: 400, protein: "52g", carbs: "6g", fat: "10g" },
+    serves: "Serves 3 days",
+    ingredients: [
+      { name: "Tilapia or cod fillets", qty: "700g", swap: "Basa fillet is very cheap and works well" },
+      { name: "Lemon juice", qty: "2 lemons" },
+      { name: "Turmeric", qty: "1 tsp" },
+      { name: "Coriander powder", qty: "1.5 tsp" },
+      { name: "Cumin powder", qty: "1 tsp" },
+      { name: "Kashmiri chilli", qty: "1 tsp" },
+      { name: "Garam masala", qty: "½ tsp" },
+      { name: "Ginger-garlic paste", qty: "1 tbsp" },
+      { name: "Olive oil", qty: "1 tbsp" },
+      { name: "Salt", qty: "to taste" },
+    ],
+    method: [
+      "Pat fillets completely dry with paper towel — crucial for a good crust.",
+      "Mix all spices with lemon, ginger-garlic paste, olive oil into a paste.",
+      "Coat fillets and marinate 20–30 min in the fridge.",
+      "Bake at 200°C on a greased tray for 12–15 min until flaky.",
+      "Alternatively pan-fry 3–4 min per side in 1 tsp olive oil on a very hot pan — gives excellent crust.",
+    ],
+    health: "White fish is very lean — 2–3g fat per 100g. Lower omega-3 than salmon but still excellent protein with virtually no saturated fat. Great LDL-neutral protein option. Better than chicken for variety.",
+    batch: "White fish doesn't reheat as well as salmon — best eaten fresh or next day. Cook in 2 batches of 350g if preferred.",
+    pairWith: ["Dal Tadka", "Cucumber Salad", "Roasted Veg"],
+  },
+  {
+    id: 5,
+    name: "Chicken Seekh Kebab (Oven-Baked)",
+    cats: ["protein"],
+    tags: ["HIGH PROTEIN","HALAL","BATCH x3","LOW FAT"],
+    tagClasses: ["tag-protein","tag-halal","tag-batch","tag-ldl"],
+    desc: "Minced chicken seekh — the street food classic made clean. No frying. Oven-baked on skewers or shaped into logs. Loaded with herbs and spices. Works as a main or in wraps with salad.",
+    macros: { kcal: 460, protein: "55g", carbs: "6g", fat: "10g" },
+    serves: "Serves 3 days (12 kebabs)",
+    ingredients: [
+      { name: "Chicken mince (lean)", qty: "800g" },
+      { name: "Onion (very finely grated)", qty: "1 medium", swap: "Grate, don't chop — texture matters" },
+      { name: "Ginger-garlic paste", qty: "1.5 tbsp" },
+      { name: "Green chillies (chopped)", qty: "2–3" },
+      { name: "Fresh coriander (chopped)", qty: "large handful" },
+      { name: "Fresh mint", qty: "small handful" },
+      { name: "Cumin powder", qty: "1 tsp" },
+      { name: "Garam masala", qty: "1 tsp" },
+      { name: "Kashmiri chilli", qty: "1 tsp" },
+      { name: "Egg white", qty: "1 (binder)" },
+      { name: "Salt", qty: "to taste" },
+    ],
+    method: [
+      "Squeeze ALL water out of grated onion using a cloth — wet mince won't hold shape.",
+      "Mix all ingredients thoroughly by hand. Refrigerate mix 30 min — firms up.",
+      "Shape around skewers or into logs/patties. Place on greased baking tray.",
+      "Bake at 220°C for 20–22 min, turning once at 12 min.",
+      "Finish under broiler 2–3 min for slight char. Rest before serving.",
+    ],
+    health: "Lean chicken mince is one of the cleanest protein sources. No added fat beyond the mince itself. Egg white binds without adding sat fat. Green chillies contain capsaicin which mildly supports metabolism.",
+    batch: "Makes 10–12 kebabs easily. Stores 3 days refrigerated. Reheats well in oven 5 min. Also excellent cold in a wholemeal wrap with salad and a yoghurt dip.",
+    pairWith: ["Big Salad Bowl", "Chana Masala", "Mint Yoghurt Dip"],
+  },
+  {
+    id: 6,
+    name: "Chana Masala (No Oil Excess)",
+    cats: ["veggie","ldl"],
+    tags: ["↓ LDL POWERHOUSE","HIGH FIBRE","VEGGIE","BATCH x3"],
+    tagClasses: ["tag-ldl","tag-veggie","tag-veggie","tag-batch"],
+    desc: "Chickpea curry done properly — rich, tangy, deeply spiced with amchur and anardana. One of the best LDL-lowering dishes in existence. Soluble fibre from chickpeas binds bile acids and removes them. Not diet food — full flavour.",
+    macros: { kcal: 380, protein: "18g", carbs: "52g", fat: "8g" },
+    serves: "Serves 3 days",
+    ingredients: [
+      { name: "Chickpeas (canned, 2 tins)", qty: "800g drained", swap: "Dried chickpeas soaked overnight are better — cook 45 min" },
+      { name: "Tomatoes (chopped)", qty: "3 large" },
+      { name: "Onion", qty: "2 medium" },
+      { name: "Ginger-garlic paste", qty: "1.5 tbsp" },
+      { name: "Tea bag (black)", qty: "1", swap: "Brewed tea adds depth and earthy colour — classic trick" },
+      { name: "Kashmiri chilli", qty: "1.5 tsp" },
+      { name: "Coriander powder", qty: "2 tsp" },
+      { name: "Cumin powder", qty: "1 tsp" },
+      { name: "Garam masala", qty: "1 tsp" },
+      { name: "Amchur powder", qty: "1.5 tsp" },
+      { name: "Anardana (pomegranate powder)", qty: "1 tsp", swap: "Adds incredible tartness — find in Indian grocery" },
+      { name: "Olive oil", qty: "1.5 tbsp" },
+    ],
+    method: [
+      "Boil chickpeas briefly in water with a tea bag — gives deep colour and earthy base. Drain, discard tea bag.",
+      "Heat olive oil. Sauté onion until deep golden (12–15 min).",
+      "Add ginger-garlic paste, cook 2 min. Add all dry spices, cook 1 min.",
+      "Add chopped tomatoes. Cook down 10 min until oil separates.",
+      "Add chickpeas + 200ml water. Mash a few chickpeas into the gravy for thickness.",
+      "Simmer 15 min. Finish with amchur, anardana, and fresh coriander.",
+    ],
+    health: "Chickpeas are clinically proven to lower LDL by 5–7% when eaten regularly. Beta-glucan soluble fibre binds bile acids. High protein for a veggie dish. Low glycaemic — won't spike insulin. Pair with chicken dishes to complete amino acid profile.",
+    batch: "Genuinely gets better on day 2 and 3. Stores perfectly. Can freeze well too. Pair with brown rice or wholemeal roti — never white rice if LDL is the priority.",
+    pairWith: ["Tandoori Chicken", "Seekh Kebab", "Brown Rice"],
+  },
+  {
+    id: 7,
+    name: "Red Lentil Dal Tadka",
+    cats: ["veggie","ldl"],
+    tags: ["↓ LDL","HIGH FIBRE","VEGGIE","BATCH x3"],
+    tagClasses: ["tag-ldl","tag-veggie","tag-veggie","tag-batch"],
+    desc: "The ultimate comfort dish of North Indian households — made clean. Red masoor dal finished with a live olive oil tadka (temper) of cumin, garlic, and dried red chilli. Silky, comforting, deeply satisfying.",
+    macros: { kcal: 340, protein: "20g", carbs: "48g", fat: "7g" },
+    serves: "Serves 3 days",
+    ingredients: [
+      { name: "Red masoor dal", qty: "300g dry" },
+      { name: "Tomatoes", qty: "2 large" },
+      { name: "Onion", qty: "1 large" },
+      { name: "Garlic cloves (sliced)", qty: "6 cloves", swap: "For tadka — use fresh, not paste" },
+      { name: "Ginger (julienned)", qty: "1 inch piece" },
+      { name: "Turmeric", qty: "1 tsp" },
+      { name: "Kashmiri chilli", qty: "1 tsp" },
+      { name: "Cumin seeds", qty: "1.5 tsp (for tadka)" },
+      { name: "Dried red chillies", qty: "2–3 (for tadka)" },
+      { name: "Olive oil", qty: "1.5 tbsp (for tadka)" },
+      { name: "Fresh coriander + lemon", qty: "to finish" },
+    ],
+    method: [
+      "Wash dal thoroughly. Pressure cook or boil with turmeric, tomatoes, onion, ginger until completely soft (20 min boiled, 8 min pressure).",
+      "Blend roughly with the back of a spoon — keep some texture.",
+      "Season with salt and kashmiri chilli. Add water to desired consistency.",
+      "For tadka: heat olive oil in a small pan until very hot. Add cumin seeds — let them crackle 10 seconds.",
+      "Add sliced garlic — fry until golden (30 seconds). Add dried red chillies.",
+      "Pour hot tadka directly over dal. Cover immediately for 30 seconds to infuse. Finish with lemon and coriander.",
+    ],
+    health: "Red lentils are one of the best soluble fibre sources for LDL reduction — proven to lower LDL 5–8% with regular consumption. Also supports ALT normalisation by reducing liver fat load. Olive oil tadka provides monounsaturated fat — actively improves LDL particle quality.",
+    batch: "Perfect batch food — cooks once, tastes better next day. Dal thickens in the fridge — add water when reheating. Stores 4 days easily.",
+    pairWith: ["Tandoori Chicken", "Baked Salmon", "Wholemeal Roti"],
+  },
+  {
+    id: 8,
+    name: "Big Salad Bowl — Desi Style",
+    cats: ["veggie","ldl"],
+    tags: ["↓ LDL","HIGH FIBRE","RAW","NO COOK"],
+    tagClasses: ["tag-ldl","tag-veggie","tag-veggie","tag-ldl"],
+    desc: "Not a sad lettuce bowl. A proper satisfying salad with roasted cumin, chaat masala, pomegranate, walnuts, and a lemon-olive oil dressing. Built to pair with your protein dishes as the daily vegetable hit.",
+    macros: { kcal: 280, protein: "10g", carbs: "28g", fat: "14g" },
+    serves: "Serves 3 days (prep base, dress daily)",
+    ingredients: [
+      { name: "Romaine lettuce or rocket", qty: "1 large head" },
+      { name: "Cherry tomatoes", qty: "200g" },
+      { name: "Cucumber", qty: "1 large" },
+      { name: "Red onion (thin sliced)", qty: "½" },
+      { name: "Chickpeas (canned, rinsed)", qty: "120g", swap: "Extra LDL-lowering fibre" },
+      { name: "Pomegranate seeds", qty: "80g", swap: "Antioxidant powerhouse — cardioprotective" },
+      { name: "Walnuts (roughly broken)", qty: "25g" },
+      { name: "Extra virgin olive oil", qty: "1 tbsp per serving" },
+      { name: "Lemon juice", qty: "1 lemon per serving" },
+      { name: "Roasted cumin powder", qty: "½ tsp" },
+      { name: "Chaat masala", qty: "½ tsp" },
+      { name: "Salt and black pepper", qty: "to taste" },
+    ],
+    method: [
+      "Chop all vegetables. Store undressed in an airtight container in fridge — lasts 3 days.",
+      "For each serving: take portion of base, add chickpeas and pomegranate.",
+      "Dress with lemon juice, olive oil, cumin, chaat masala, salt. Toss well.",
+      "Add walnuts last — keeps them crunchy.",
+      "Option: add a soft-boiled egg or leftover tandoori chicken on top for extra protein.",
+    ],
+    health: "Walnuts provide ALA omega-3 and directly lower LDL. Pomegranate has punicalagins which reduce arterial inflammation. Olive oil dressing improves LDL particle quality. Chickpeas add soluble fibre. This salad is a cardiovascular meal in itself.",
+    batch: "Prep the base once — dress per serving. Red onion softens by day 2 which some prefer. Keep walnuts and pomegranate separate until serving.",
+    pairWith: ["Any protein dish", "Baked Salmon", "Seekh Kebab"],
+  },
+  {
+    id: 9,
+    name: "Roasted Vegetables + Chickpeas",
+    cats: ["veggie","ldl"],
+    tags: ["↓ LDL","HIGH FIBRE","VEGGIE","BATCH x3"],
+    tagClasses: ["tag-ldl","tag-veggie","tag-veggie","tag-batch"],
+    desc: "Sheet-pan roasted courgette, broccoli, sweet potato, and peppers with chickpeas — all tossed in cumin-coriander spiced olive oil. The easiest batch cook in this list. Goes with everything.",
+    macros: { kcal: 360, protein: "14g", carbs: "46g", fat: "12g" },
+    serves: "Serves 3 days",
+    ingredients: [
+      { name: "Broccoli florets", qty: "300g" },
+      { name: "Courgette (zucchini)", qty: "2 medium" },
+      { name: "Sweet potato", qty: "300g", swap: "Lower GI than regular potato — better for BP" },
+      { name: "Red pepper", qty: "2" },
+      { name: "Red onion (wedges)", qty: "1 large" },
+      { name: "Chickpeas (canned, rinsed)", qty: "240g" },
+      { name: "Olive oil", qty: "2 tbsp" },
+      { name: "Cumin powder", qty: "1.5 tsp" },
+      { name: "Coriander powder", qty: "1 tsp" },
+      { name: "Paprika", qty: "1 tsp" },
+      { name: "Turmeric", qty: "½ tsp" },
+      { name: "Salt and black pepper", qty: "to taste" },
+    ],
+    method: [
+      "Preheat oven to 220°C. Line 2 large baking trays.",
+      "Cut all veg into similar-sized pieces (important for even cooking).",
+      "Toss everything — including chickpeas — with olive oil and all spices.",
+      "Spread in a single layer across trays. Don't crowd — they'll steam not roast.",
+      "Roast 30–35 min, turning once at 20 min. Edges should be caramelised.",
+      "Chickpeas go crispy — excellent texture contrast.",
+    ],
+    health: "Broccoli contains sulforaphane which supports liver detoxification — directly relevant to your elevated ALT. Sweet potato is high in potassium which helps lower blood pressure. Chickpeas provide soluble fibre for LDL. This is arguably the most complete health-supporting dish in this list.",
+    batch: "Perfect reheating dish — oven 5 min at 180°C or microwave. Slightly softer on day 2–3 but still excellent. Versatile — works as a side or a main with protein on top.",
+    pairWith: ["Baked Salmon", "Achari Chicken", "Masala Fish"],
+  },
+  {
+    id: 10,
+    name: "Lentil Shorba (Thick Soup)",
+    cats: ["veggie","ldl"],
+    tags: ["↓ LDL","HIGH FIBRE","SOUP","BATCH x3"],
+    tagClasses: ["tag-ldl","tag-veggie","tag-veggie","tag-batch"],
+    desc: "A thick, warming North Indian-style lentil soup — think restaurant shorba but with more body and less oil. Turmeric, cumin, black pepper, ginger. Genuinely satisfying as a light meal or starter before your main dish.",
+    macros: { kcal: 290, protein: "17g", carbs: "42g", fat: "5g" },
+    serves: "Serves 3 days",
+    ingredients: [
+      { name: "Yellow moong dal or masoor dal", qty: "250g dry" },
+      { name: "Tomatoes", qty: "3" },
+      { name: "Onion", qty: "1" },
+      { name: "Garlic", qty: "4 cloves" },
+      { name: "Ginger", qty: "1.5 inch piece" },
+      { name: "Cumin seeds", qty: "1 tsp" },
+      { name: "Turmeric", qty: "1 tsp" },
+      { name: "Black pepper (freshly ground)", qty: "½ tsp", swap: "Piperine in black pepper enhances turmeric absorption" },
+      { name: "Kashmiri chilli", qty: "½ tsp" },
+      { name: "Olive oil", qty: "1 tbsp" },
+      { name: "Lemon juice", qty: "1 lemon" },
+      { name: "Fresh coriander", qty: "large handful" },
+    ],
+    method: [
+      "Heat olive oil. Add cumin seeds and let crackle. Add garlic, ginger — sauté 1 min.",
+      "Add chopped onion and tomatoes. Cook 8 min until soft.",
+      "Add washed dal, turmeric, chilli, 800ml water. Bring to boil.",
+      "Simmer 25–30 min until dal is completely dissolved.",
+      "Blend smooth with a stick blender. Adjust consistency with water.",
+      "Season with salt, black pepper, lemon juice. Finish with fresh coriander.",
+    ],
+    health: "Moong dal is the most digestive-friendly lentil — particularly good if your ALT is elevated as it puts less metabolic load on the liver. Soluble fibre directly lowers LDL. Black pepper with turmeric increases curcumin bioavailability 2000%. High volume, low calorie — supports satiety and fat loss.",
+    batch: "Soup thickens overnight — add water when reheating. Stores 4 days. Freeze half if making a large batch. Drink as a starter 20 min before main meal — reduces total calorie intake at the meal.",
+    pairWith: ["Any protein dish", "Wholemeal roti", "Brown rice"],
+  },
+  {
+    id: 11,
+    name: "Mackerel Curry (Start Here for Fish)",
+    cats: ["protein","fish","ldl"],
+    tags: ["HIGHEST OMEGA-3","↓ LDL KING","FISH","BATCH x3"],
+    tagClasses: ["tag-fish","tag-ldl","tag-fish","tag-batch"],
+    desc: "Mackerel is the most omega-3-rich accessible fish — more than salmon, cheaper, and when made into a proper South-meets-North curry with tomato and kokum, the 'fishy' flavour completely transforms. This is the fish dish for people who don't like fish.",
+    macros: { kcal: 510, protein: "46g", carbs: "12g", fat: "24g" },
+    serves: "Serves 3 days",
+    ingredients: [
+      { name: "Mackerel fillets (fresh or canned in water)", qty: "600g", swap: "Canned mackerel in water is fine — drain well" },
+      { name: "Tomatoes", qty: "4 large" },
+      { name: "Onion", qty: "2" },
+      { name: "Ginger-garlic paste", qty: "1.5 tbsp" },
+      { name: "Kashmiri chilli", qty: "1.5 tsp" },
+      { name: "Coriander powder", qty: "2 tsp" },
+      { name: "Turmeric", qty: "1 tsp" },
+      { name: "Cumin powder", qty: "1 tsp" },
+      { name: "Tamarind paste", qty: "1 tbsp", swap: "Neutralises fishiness — don't skip" },
+      { name: "Olive oil", qty: "1.5 tbsp" },
+      { name: "Fresh coriander", qty: "to finish" },
+    ],
+    method: [
+      "If using fresh mackerel — marinate in turmeric and lemon 30 min. If canned — drain and rinse well.",
+      "Heat oil. Sauté onion until golden. Add ginger-garlic paste, cook 2 min.",
+      "Add all spices, cook 1 min. Add chopped tomatoes — cook down 10 min.",
+      "Add tamarind paste and 150ml water. Stir well.",
+      "Add mackerel gently — don't stir too hard or it breaks up. Simmer 12–15 min.",
+      "Finish with coriander. The gravy should be rich and thick.",
+    ],
+    health: "Mackerel has the highest EPA+DHA content of any common fish — 2.5–3g per 100g. Single serving gives you 4–5g omega-3. At your LDL levels this is genuinely therapeutic. Tamarind adds tartness and has mild hepatoprotective properties relevant to your ALT.",
+    batch: "Fish curries actually taste best next day when spices have infused. Store 3 days. Reheats gently on hob — don't microwave fish if you can avoid it.",
+    pairWith: ["Dal Tadka", "Brown Rice", "Big Salad Bowl"],
+  },
+];
+
+const cats = {
+  protein: ["tag-protein"],
+  fish: ["tag-fish"],
+  veggie: ["tag-veggie"],
+  ldl: ["tag-ldl"],
+};
+
+let currentFilter = 'all';
+let openMeal = null;
+
+function renderMeals() {
+  const list = document.getElementById('meal-list');
+  list.innerHTML = meals.map((m, i) => {
+    const hidden = currentFilter !== 'all' && !m.cats.includes(currentFilter) ? 'hidden' : '';
+    const tagsHtml = m.tags.map((t, ti) => `<span class="tag ${m.tagClasses[ti]}">${t}</span>`).join('');
+    const ingsHtml = m.ingredients.map(ing => `
+      <div class="ing-item">
+        <div>
+          <div class="ing-name">${ing.name}</div>
+          ${ing.swap ? `<div class="ing-swap">↳ ${ing.swap}</div>` : ''}
+        </div>
+        <div class="ing-qty">${ing.qty}</div>
+      </div>`).join('');
+    const stepsHtml = m.method.map((s, si) => `
+      <div class="step">
+        <div class="step-num">${si+1}</div>
+        <div class="step-text">${s}</div>
+      </div>`).join('');
+    const pairsHtml = m.pairWith.map(p => `<span class="pair-chip">${p}</span>`).join('');
+
+    return `<div class="meal-card ${hidden}" id="card-${i}">
+      <div class="meal-top" onclick="togMeal(${i})">
+        <div class="meal-row1">
+          <div class="meal-number">${String(m.id).padStart(2,'0')}</div>
+          <div style="flex:1"><div class="meal-name">${m.name}</div><div style="font-size:8.5px;color:var(--muted);margin-top:3px">${m.serves}</div></div>
+        </div>
+        <div class="meal-tags">${tagsHtml}</div>
+        <div class="meal-desc">${m.desc}</div>
+        <div class="macro-bar">
+          <div class="macro-cell"><div class="macro-val">${m.macros.kcal}</div><div class="macro-lbl">KCAL</div></div>
+          <div class="macro-cell"><div class="macro-val">${m.macros.protein}</div><div class="macro-lbl">PROTEIN</div></div>
+          <div class="macro-cell"><div class="macro-val">${m.macros.carbs}</div><div class="macro-lbl">CARBS</div></div>
+          <div class="macro-cell"><div class="macro-val">${m.macros.fat}</div><div class="macro-lbl">FAT</div></div>
+        </div>
+        <div class="expand-hint">
+          <span class="expand-text">INGREDIENTS · METHOD · HEALTH NOTES</span>
+          <span class="expand-arrow" id="arr-${i}">▾</span>
+        </div>
+      </div>
+      <div class="meal-detail" id="det-${i}">
+        <div class="detail-section">
+          <div class="ds-label">Ingredients</div>
+          <div class="ing-list">${ingsHtml}</div>
+        </div>
+        <div class="detail-section">
+          <div class="ds-label">Method</div>
+          <div class="method-steps">${stepsHtml}</div>
+        </div>
+        <div class="detail-section">
+          <div class="ds-label">Health Note</div>
+          <div class="health-note">
+            <div class="hn-title">⚕ WHY THIS WORKS FOR YOUR MARKERS</div>
+            <div class="hn-text">${m.health}</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="ds-label">Batch Cook Note</div>
+          <div class="batch-note">
+            <div class="bn-title">🍳 STORAGE + REHEATING</div>
+            <div class="bn-text">${m.batch}</div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="ds-label">Pair This With</div>
+          <div class="pair-box">${pairsHtml}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togMeal(i) {
+  if (openMeal !== null && openMeal !== i) {
+    const pd = document.getElementById(`det-${openMeal}`);
+    const pa = document.getElementById(`arr-${openMeal}`);
+    if (pd) pd.classList.remove('open');
+    if (pa) pa.classList.remove('open');
+  }
+  const det = document.getElementById(`det-${i}`);
+  const arr = document.getElementById(`arr-${i}`);
+  det.classList.toggle('open');
+  arr.classList.toggle('open');
+  openMeal = det.classList.contains('open') ? i : null;
+}
+
+function filter(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  openMeal = null;
+  meals.forEach((m, i) => {
+    const card = document.getElementById(`card-${i}`);
+    if (!card) return;
+    const det = document.getElementById(`det-${i}`);
+    const arr = document.getElementById(`arr-${i}`);
+    if (det) det.classList.remove('open');
+    if (arr) arr.classList.remove('open');
+    if (cat === 'all' || m.cats.includes(cat)) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+renderMeals();
+</script>
+</body>
+</html>
